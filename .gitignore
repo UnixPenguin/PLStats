@@ -1,0 +1,11 @@
+/data/
+*.parquet
+__pycache__/
+*.pyc
+.venv/
+.vs/
+.claude/
+.DS_Store
+/build/
+/docs/data.old/
+/figures.old/

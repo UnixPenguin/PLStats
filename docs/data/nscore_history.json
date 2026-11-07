@@ -1,0 +1,63 @@
+{
+ "fits": [
+  {
+   "fit_date": "2026-11-05",
+   "snapshot": "2026-10-31",
+   "source_file": "openpowerlifting-2026-10-31-4a1c65a7.csv",
+   "data_from": "2016-10-29",
+   "data_to": "2026-10-25",
+   "population": "us-tested-raw-core",
+   "method": "v1: ln(Total) = ln(a) + b*ln(BW) by unweighted least squares over all results; scale = 500 / 99th percentile of Total/(a*BW^b) over all results, both sexes",
+   "scale": 342.9661250514742,
+   "scale_quantile": 0.99,
+   "scale_n_lifters": null,
+   "coefficients": {
+    "M": {
+     "ln_a": 3.9673546573425438,
+     "a": 52.84455382527232,
+     "b": 0.5259736377757456,
+     "n_results": 141157,
+     "n_lifters": null
+    },
+    "F": {
+     "ln_a": 4.150094233057107,
+     "a": 63.43997815954761,
+     "b": 0.3808507408919968,
+     "n_results": 75871,
+     "n_lifters": null
+    }
+   },
+   "id": 1
+  },
+  {
+   "fit_date": "2026-11-07",
+   "snapshot": "2026-10-31",
+   "source_file": "openpowerlifting-2026-10-31-4a1c65a7.csv",
+   "data_from": "2016-10-29",
+   "data_to": "2026-10-25",
+   "population": "us-tested-raw-core",
+   "method": "v2: ln(Total) = ln(a) + b*ln(BW) by least squares, each lifter's results weighted to a total of 1; scale = 500 / 99th percentile of lifters' best Total/(a*BW^b), both sexes pooled",
+   "scale": 334.00243835236864,
+   "scale_quantile": 0.99,
+   "scale_n_lifters": 92475,
+   "coefficients": {
+    "M": {
+     "ln_a": 3.9967780780932296,
+     "a": 54.422522139092486,
+     "b": 0.5095408236049885,
+     "n_results": 141533,
+     "n_lifters": 59819
+    },
+    "F": {
+     "ln_a": 4.092225685524205,
+     "a": 59.87300199220058,
+     "b": 0.379770371718613,
+     "n_results": 77120,
+     "n_lifters": 32657
+    }
+   },
+   "id": 2
+  }
+ ],
+ "about": "Every N-Score fit PLStats has published, oldest first. N-Score = Total / (a * BW^b) * scale, with a and b per sex. The fit is redone on each data refresh, so a score is only exactly comparable with scores from the same fit (same id)."
+}
