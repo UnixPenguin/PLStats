@@ -1,0 +1,54 @@
+name: Refresh OpenPowerlifting data
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"   # every Monday, 09:00 UTC
+  workflow_dispatch:       # "Run workflow" button in the Actions tab
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Tests
+        run: python tests/test_pipeline.py
+
+      - name: Download latest OpenPowerlifting CSV
+        run: python scripts/download_data.py
+
+      # The pipeline stages everything in build/, checks it, and only then replaces docs/data,
+      # README.md and results/. If any step fails, the job stops here and nothing is committed.
+      # Figures are not regenerated weekly (binary files would add megabytes to the repo every week).
+      - name: Run analysis pipeline
+        run: python run_pipeline.py --no-figures
+
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          SNAP=$(python -c "import json;print(json.load(open('docs/data/stats.json'))['meta']['snapshot'])")
+          OLD=$(git show HEAD:docs/data/stats.json | python -c "import json,sys;print(json.load(sys.stdin)['meta'].get('snapshot',''))")
+          if [ "$SNAP" = "$OLD" ]; then
+            echo "Snapshot $SNAP is already published; nothing to commit."
+            exit 0
+          fi
+          git add docs/data results README.md
+          git commit -m "Refresh data: OpenPowerlifting snapshot $SNAP"
+          git push

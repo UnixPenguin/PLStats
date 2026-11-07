@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PLStats</title>
+<meta name="description" content="Enter your squat, bench and deadlift and see how you rank against powerlifters from around the world, using OpenPowerlifting data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="brand"><span class="logo">PL</span>Stats</div>
+    <nav>
+      <a href="#calc">Calculator</a>
+      <a href="#glossary">Glossary</a>
+      <a href="#deep">The stats</a>
+      <a href="https://github.com/" id="gh-link">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>How strong are you, <em>really</em>?</h1>
+    <p class="lede">Enter your best squat, bench and deadlift and see how you compare with ten years of powerlifting
+      meets from <a href="https://www.openpowerlifting.org">OpenPowerlifting</a>, adjusted for your bodyweight, age and sex.
+      By default you're compared with US drug-tested raw lifters, or you can switch to lifters worldwide and other groups.</p>
+  </section>
+
+  <section id="calc" class="card form-card">
+    <form id="lifter" autocomplete="off">
+      <div class="row">
+        <fieldset class="seg" aria-label="Sex">
+          <legend>Category</legend>
+          <label><input type="radio" name="sex" value="M" checked><span>Men</span></label>
+          <label><input type="radio" name="sex" value="F"><span>Women</span></label>
+        </fieldset>
+        <fieldset class="seg" aria-label="Units">
+          <legend>Units</legend>
+          <label><input type="radio" name="unit" value="kg" checked><span>kg</span></label>
+          <label><input type="radio" name="unit" value="lb"><span>lb</span></label>
+        </fieldset>
+      </div>
+      <div class="grid-in">
+        <label class="in"><span>Bodyweight <i class="u"></i></span><input name="bw" type="number" inputmode="decimal" step="any" min="20" max="300" placeholder="83" required></label>
+        <label class="in"><span>Age <i>(optional)</i></span><input name="age" type="number" inputmode="numeric" min="10" max="90" placeholder="25"></label>
+        <label class="in"><span>Squat <i class="u"></i></span><input name="squat" type="number" inputmode="decimal" step="any" min="1" placeholder="200" required></label>
+        <label class="in"><span>Bench <i class="u"></i></span><input name="bench" type="number" inputmode="decimal" step="any" min="1" placeholder="130" required></label>
+        <label class="in"><span>Deadlift <i class="u"></i></span><input name="deadlift" type="number" inputmode="decimal" step="any" min="1" placeholder="240" required></label>
+      </div>
+      <div class="cohort">
+        <div class="cohort-head"><span class="cohort-title">Compare me against</span>
+          <span class="hint" id="cohort-n"></span></div>
+        <div class="row">
+          <fieldset class="seg small" aria-label="Region">
+            <legend>Region</legend>
+            <label><input type="radio" name="region" value="us" checked><span>US</span></label>
+            <label><input type="radio" name="region" value="world"><span>Worldwide</span></label>
+          </fieldset>
+          <fieldset class="seg small" aria-label="Drug testing">
+            <legend>Drug testing</legend>
+            <label><input type="radio" name="testing" value="tested" checked><span>Tested only</span></label>
+            <label><input type="radio" name="testing" value="all"><span>Tested + untested</span></label>
+          </fieldset>
+          <fieldset class="seg small" aria-label="Equipment">
+            <legend>Equipment</legend>
+            <label><input type="radio" name="equipment" value="raw" checked><span>Raw</span></label>
+            <label><input type="radio" name="equipment" value="wraps"><span>Raw + knee wraps</span></label>
+          </fieldset>
+          <fieldset class="seg small" aria-label="Age divisions">
+            <legend>Divisions</legend>
+            <label><input type="radio" name="ages" value="core" checked><span>Open, Junior, College</span></label>
+            <label><input type="radio" name="ages" value="all"><span>All ages</span></label>
+          </fieldset>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn">See my results</button>
+        <button type="button" class="btn ghost" id="example">Try an example</button>
+      </div>
+    </form>
+  </section>
+
+  <section id="results" hidden>
+    <div class="summary card">
+      <div class="total-box">
+        <div class="k">Total</div>
+        <div class="big" id="r-total">–</div>
+        <div class="sub" id="r-class">–</div>
+      </div>
+      <div class="headline" id="r-headline"></div>
+    </div>
+
+    <h2 class="sec">Your scores</h2>
+    <p class="hint">Each score adjusts your total for bodyweight. The percentile compares you with the best scores of
+      lifters of your sex in your group. <a href="#scores-explained">What are these?</a></p>
+    <div class="tiles" id="r-scores"></div>
+
+    <div class="two">
+      <div class="card">
+        <div class="card-head">
+          <h3>Where you rank</h3>
+          <div class="seg small" id="cmp-toggle">
+            <button type="button" data-v="class" class="on">My weight class</button>
+            <button type="button" data-v="All">All weights</button>
+          </div>
+        </div>
+        <div id="r-ranks"></div>
+      </div>
+      <div class="card">
+        <h3>Compared with lifters like you</h3>
+        <div id="r-expected"></div>
+      </div>
+    </div>
+
+    <div class="two">
+      <div class="card">
+        <h3>Your strength profile</h3>
+        <p class="hint">Share of your total from each lift, compared with the average lifter of your sex.</p>
+        <div id="r-profile"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Profile map</h3>
+          <div class="seg small" id="profile-view"><button type="button" data-v="2d" class="on">Map</button><button type="button" data-v="3d">3-D</button></div></div>
+        <p class="hint" id="profile-cap"></p>
+        <div id="ch-profile" class="chart"></div>
+        <div class="picker" id="ch-profile-pick"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>Score distribution</h3>
+        <div class="seg small" id="dist-toggle"></div>
+      </div>
+      <div id="ch-dist" class="chart"></div>
+    </div>
+  </section>
+
+  <section id="glossary" class="card">
+    <h2>Glossary</h2>
+    <dl class="gloss">
+      <dt>Total</dt><dd>Best successful squat + bench press + deadlift at one meet.</dd>
+      <dt>Raw</dt><dd>Lifting without supportive suits or bench shirts (belt, knee sleeves and wrist wraps only). Equipped lifters move much more weight, so they are excluded.</dd>
+      <dt>Tested</dt><dd>The federation drug-tests its athletes (e.g. USAPL, AMP, USPA Drug Tested).</dd>
+      <dt>Full meet (SBD)</dt><dd>The lifter competed in all three lifts, not a bench-only or deadlift-only event.</dd>
+      <dt>Bomb-out</dt><dd>Missing all three attempts on one lift. That lift counts as zero, so there is no valid total.</dd>
+      <dt>DQ</dt><dd>Disqualified: removed from the results, for example for a failed drug test or rule violation. OpenPowerlifting also marks bomb-outs as DQ.</dd>
+      <dt>Weight class</dt><dd>IPF classes. Men: 59, 66, 74, 83, 93, 105, 120, 120+ kg. Women: 47, 52, 57, 63, 69, 76, 84, 84+ kg.</dd>
+      <dt>Percentile</dt><dd>"85th percentile" means you beat 85% of lifters in your group, each at their best.</dd>
+    </dl>
+  </section>
+
+  <section id="scores-explained" class="card">
+    <h2>The scoring formulas</h2>
+    <p>Bigger people lift more, so raw totals can't compare a 60&nbsp;kg lifter with a 120&nbsp;kg lifter. Every formula
+      divides your total by an <em>expected total for your bodyweight</em> curve, then multiplies by a constant:</p>
+    <p class="eq">score = Total × K ÷ f(bodyweight)</p>
+    <div class="formulas">
+      <div><h4>Wilks <small>1994</small></h4><p>f is a 5th-degree polynomial in bodyweight fitted on elite results from the 1990s, when few women competed. K = 500. The classic, though many federations have since moved to newer formulas.</p></div>
+      <div><h4>Dots <small>2019</small></h4><p>Developed by Tim Konertz as a modern update of Wilks. f is a 4th-degree polynomial, K = 500. Widely used by federations worldwide, though some have started moving away from it.</p></div>
+      <div><h4>IPF GL <small>2020</small></h4><p>The IPF's "Goodlift" points, its official scoring standard: f = A − B·e<sup>−C·BW</sup>, a curve that rises and levels off. K = 100, so around 100 is elite international level. Not given below 35 kg bodyweight, same as on OpenPowerlifting.</p></div>
+      <div><h4>N-Score <small>PLStats</small></h4><p>A new, experimental formula made for this project. f = a·BW<sup>b</sup>, with a separate curve for men and women, and the top 1% of lifters score above 500. With the other three formulas, heavier women score lower on average than lighter women; with N-Score they score about the same. It's updated every week with new data, so your score can change slightly; the version and date are shown next to it.</p></div>
+    </div>
+  </section>
+
+  <section id="deep">
+    <h2 class="sec">The stats <span class="tag">for the curious</span></h2>
+    <p class="hint">Methods and diagnostics behind the calculator. Click a section to expand it.</p>
+
+    <details class="card">
+      <summary>Data and cleaning</summary>
+      <div id="d-clean"></div>
+    </details>
+
+    <details class="card" data-render="pca">
+      <summary>Strength profiles (PCA)</summary>
+      <div id="d-pca"></div>
+    </details>
+
+    <details class="card" data-render="scoring">
+      <summary>Building the N-Score and comparing formulas</summary>
+      <div id="d-scoring"></div>
+    </details>
+
+    <details class="card" data-render="reg">
+      <summary>What predicts a total? (multivariable regression)</summary>
+      <div id="d-reg"></div>
+    </details>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <p>This page uses data from the OpenPowerlifting project, <a href="https://www.openpowerlifting.org">openpowerlifting.org</a>.
+    You can download a copy of the data at <a href="https://gitlab.com/openpowerlifting/opl-data">gitlab.com/openpowerlifting/opl-data</a>.
+    PLStats is not affiliated with OpenPowerlifting. <span id="meta-line"></span></p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
