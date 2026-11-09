@@ -36,15 +36,15 @@ The data refreshes automatically every week from the latest OpenPowerlifting rel
 <!-- DATA-START (this block is rewritten by run_pipeline.py; do not edit by hand) -->
 ## Current data
 
-**OpenPowerlifting snapshot: 2026-10-31** · meets from 2016-10-29 to 2026-10-25 · default group (US, drug-tested, raw): 92,475 lifters (59,819 men, 32,657 women) with 218,653 results · last refreshed 2026-11-07
+**OpenPowerlifting snapshot: 2026-11-07** · meets from 2016-11-04 to 2026-11-01 · default group (US, drug-tested, raw): 92,517 lifters (59,841 men, 32,677 women) with 218,759 results · last refreshed 2026-11-09
 
 | Key result | Men | Women |
 |---|---:|---:|
-| N-Score version 2 (2026-11-07): Total = a · BW^b | 54.42 · BW^0.510 | 59.87 · BW^0.380 |
+| N-Score version 3 (2026-11-09): Total = a · BW^b | 54.46 · BW^0.509 | 59.84 · BW^0.380 |
 | N-Score correlation with bodyweight | -0.032 | -0.013 |
 | Dots correlation with bodyweight | +0.001 | -0.145 |
 | Spread of the squat/deadlift ratio (variance of its log) | 0.0145 | 0.0191 |
-| Spread of the squat/bench ratio (variance of its log) | 0.0193 | 0.0259 |
+| Spread of the squat/bench ratio (variance of its log) | 0.0193 | 0.0258 |
 | Spread of the deadlift/bench ratio (variance of its log) | 0.0221 | 0.0242 |
 
 The smaller the spread, the more alike lifters are in that ratio.

@@ -57,6 +57,35 @@
     }
    },
    "id": 2
+  },
+  {
+   "fit_date": "2026-11-09",
+   "snapshot": "2026-11-07",
+   "source_file": "openpowerlifting-2026-11-07-f93a530c.csv",
+   "data_from": "2016-11-04",
+   "data_to": "2026-11-01",
+   "population": "us-tested-raw-core",
+   "method": "v2: ln(Total) = ln(a) + b*ln(BW) by least squares, each lifter's results weighted to a total of 1; scale = 500 / 99th percentile of lifters' best Total/(a*BW^b), both sexes pooled",
+   "scale": 333.99017776281,
+   "scale_quantile": 0.99,
+   "scale_n_lifters": 92517,
+   "coefficients": {
+    "M": {
+     "ln_a": 3.9973751004133184,
+     "a": 54.45502330051907,
+     "b": 0.5094164382919004,
+     "n_results": 141593,
+     "n_lifters": 59841
+    },
+    "F": {
+     "ln_a": 4.09169022496311,
+     "a": 59.84095094276164,
+     "b": 0.3799148095134242,
+     "n_results": 77166,
+     "n_lifters": 32677
+    }
+   },
+   "id": 3
   }
  ],
  "about": "Every N-Score fit PLStats has published, oldest first. N-Score = Total / (a * BW^b) * scale, with a and b per sex. The fit is redone on each data refresh, so a score is only exactly comparable with scores from the same fit (same id)."
